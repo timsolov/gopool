@@ -1,0 +1,2 @@
+# gopool
+Pool of goroutines
