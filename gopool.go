@@ -15,22 +15,22 @@ type GoPool struct {
 	queue chan func()
 }
 
-// New creates new goroutine pool with given size. It also creates a work
-// queue of given size. Finally, it spawns given amount of goroutines
+// New creates new goroutine pool with maxWorkers size. It also creates a work
+// queue of sizeQueue size. Finally, it spawns given amount of goroutines
 // immediately.
-//   size - maximum amount of goroutines
-//   queueSize - size of waiters for goroutines. If 0 - then no queue.
+//   maxWorkers - maximum amount of goroutines
+//   sizeQueue - size of waiters for goroutines. If 0 - then no queue.
 //   spawn - amount of goroutines will start at immediately
-func New(size, queueSize, spawn int) *GoPool {
-	if spawn <= 0 && queueSize > 0 {
+func New(maxWorkers, sizeQueue, spawn int) *GoPool {
+	if spawn <= 0 && sizeQueue > 0 {
 		panic("dead queue configuration detected")
 	}
-	if spawn > size {
+	if spawn > maxWorkers {
 		panic("spawn > workers")
 	}
 	p := &GoPool{
-		sem:   make(chan struct{}, size),
-		queue: make(chan func(), queueSize),
+		sem:   make(chan struct{}, maxWorkers),
+		queue: make(chan func(), sizeQueue),
 	}
 	for i := 0; i < spawn; i++ {
 		p.sem <- struct{}{}
